@@ -60,6 +60,30 @@ src/app/(app)/               The authenticated product: dashboard,
                              onboarding/profile, opportunities, career memory.
 ```
 
+## Deploy (Vercel + hosted Postgres)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fan-code-knf%2Fknf%2Ftree%2Fclaude%2Fai-career-decision-mvp-7jnkqf&env=DATABASE_URL,NEXTAUTH_SECRET&envDescription=Postgres%20connection%20string%20(from%20Neon%2FSupabase)%20and%20a%20random%20auth%20secret&project-name=northstar&repository-name=northstar)
+
+1. **Create a Postgres database** — [Neon](https://neon.tech) or
+   [Supabase](https://supabase.com) both have a free tier. Copy the connection
+   string (it should include `?sslmode=require`).
+2. **Click the Deploy button above.** It imports this branch into a new
+   Vercel project and prompts for env vars:
+   - `DATABASE_URL` — the connection string from step 1
+   - `NEXTAUTH_SECRET` — any random string (e.g. `openssl rand -base64 32`)
+3. **Deploy.** The build runs `prisma migrate deploy && next build`
+   automatically, so the schema is created on first deploy — no manual
+   migration step.
+4. **Seed market benchmark data** (one-time, from your machine, pointed at
+   the hosted database):
+   ```bash
+   DATABASE_URL="<your hosted connection string>" npx prisma db seed
+   ```
+5. Open the `*.vercel.app` URL Vercel gives you — that's your live app.
+
+`NEXTAUTH_URL` doesn't need to be set manually on Vercel; Auth.js trusts the
+Vercel-provided host automatically. Set it only if you attach a custom domain.
+
 ## Revenue model (as implemented)
 
 - **Free**: profile, should-I-interview decisions, stay-vs-offer comparison.
