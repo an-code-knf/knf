@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError("Invalid email or password.");
       return;
     }
-    router.push("/dashboard");
+    router.push("/decide");
     router.refresh();
   }
 

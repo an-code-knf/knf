@@ -1,9 +1,25 @@
-import type { Profile, Opportunity, Offer, MarketBenchmark } from "@/generated/prisma/client";
+import type { Profile } from "@/generated/prisma/client";
 
 export type ProfileInput = Profile | null;
-export type OpportunityInput = Opportunity;
-export type OfferInput = Offer;
-export type BenchmarkInput = MarketBenchmark;
+
+export type CompanyStage = "STARTUP" | "GROWTH" | "ESTABLISHED" | "ENTERPRISE";
+export type CompanyTrajectory = "GROWING" | "STABLE" | "SLOWING";
+
+export interface OpportunityInput {
+  company: string;
+  role: string;
+  industry?: string | null;
+  salaryEstimateMin?: number | null;
+  salaryEstimateMax?: number | null;
+  currency?: string;
+  commuteMinutes?: number | null;
+  remote?: boolean;
+  companyStage?: CompanyStage | null;
+  companyTrajectory?: CompanyTrajectory | null;
+  leadershipRating?: number | null;
+  promotionOutlook?: number | null;
+  learningRating?: number | null;
+}
 
 export interface ScoredFactor {
   label: string;
@@ -17,37 +33,4 @@ export interface OpportunityScore {
   cons: string[];
   rationale: string;
   netScore: number;
-}
-
-export interface ComparisonRow {
-  label: string;
-  stay: string;
-  candidate: string;
-  edge: "stay" | "candidate" | "even";
-}
-
-export interface OfferComparison {
-  rows: ComparisonRow[];
-  fiveYearStayEarnings: number;
-  fiveYearNewEarnings: number;
-  recommendation: string;
-  rationale: string;
-}
-
-export interface NegotiationAsk {
-  item: string;
-  detail: string;
-}
-
-export interface NegotiationPlan {
-  targetSalary: number;
-  currentOfferSalary: number;
-  asks: NegotiationAsk[];
-  emailDraft: string;
-}
-
-export interface MarketPulse {
-  benchmark: BenchmarkInput | null;
-  marketDeltaPct: number | null;
-  message: string;
 }

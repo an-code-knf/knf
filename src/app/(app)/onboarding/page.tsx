@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/session";
-import { saveProfile, toggleConnector, setTier } from "@/lib/actions/profile";
+import { saveProfile, toggleConnector } from "@/lib/actions/profile";
 import { Button, Card, Field, Input, PageHeader, Select, Textarea, Badge } from "@/components/ui/primitives";
 import type { ConnectorType } from "@/generated/prisma/enums";
 
@@ -13,10 +13,9 @@ const CONNECTORS: { type: ConnectorType; label: string; description: string }[] 
 
 export default async function OnboardingPage() {
   const session = await requireSession();
-  const [profile, connectors, user] = await Promise.all([
+  const [profile, connectors] = await Promise.all([
     prisma.profile.findUnique({ where: { userId: session.user.id } }),
     prisma.connector.findMany({ where: { userId: session.user.id } }),
-    prisma.user.findUniqueOrThrow({ where: { id: session.user.id } }),
   ]);
 
   const connectorState = new Map(connectors.map((c) => [c.type, c]));
@@ -25,7 +24,7 @@ export default async function OnboardingPage() {
     <div className="space-y-8">
       <PageHeader
         title="Your profile"
-        description="Northstar uses this to score opportunities, compare offers, and negotiate on your behalf. Nothing here is shared automatically."
+        description="Northstar uses this to judge whether an opportunity is worth your time. Nothing here is shared automatically."
       />
 
       <Card>
@@ -74,7 +73,7 @@ export default async function OnboardingPage() {
         <Card className="space-y-6">
           <div>
             <h2 className="text-lg font-semibold text-white">Current role</h2>
-            <p className="text-sm text-neutral-400">Your baseline — everything gets compared against this.</p>
+            <p className="text-sm text-neutral-400">Your baseline — every opportunity gets compared against this.</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -102,33 +101,13 @@ export default async function OnboardingPage() {
             <Field label="Years of experience">
               <Input type="number" name="yearsExperience" defaultValue={profile?.yearsExperience ?? ""} />
             </Field>
-            <Field label="Pension contribution (%)">
-              <Input type="number" step="0.5" name="currentPensionPct" defaultValue={profile?.currentPensionPct ?? ""} />
-            </Field>
-            <Field label="Vacation days">
-              <Input type="number" name="currentVacationDays" defaultValue={profile?.currentVacationDays ?? ""} />
-            </Field>
           </div>
 
           <div>
             <h2 className="text-lg font-semibold text-white">How your current job feels</h2>
-            <p className="text-sm text-neutral-400">1 (poor) – 5 (excellent). Used to judge whether a new offer is actually better.</p>
+            <p className="text-sm text-neutral-400">1 (poor) – 5 (excellent). Used to judge whether a new opportunity is actually better.</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Manager quality">
-              <Select name="currentManagerRating" defaultValue={profile?.currentManagerRating ?? 3}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Company stability">
-              <Select name="currentCompanyStabilityRating" defaultValue={profile?.currentCompanyStabilityRating ?? 3}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </Select>
-            </Field>
             <Field label="Promotion outlook">
               <Select name="currentPromotionOutlook" defaultValue={profile?.currentPromotionOutlook ?? 3}>
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -173,27 +152,6 @@ export default async function OnboardingPage() {
           <Button type="submit">Save profile</Button>
         </Card>
       </form>
-
-      <Card>
-        <h2 className="mb-1 text-lg font-semibold text-white">Plan</h2>
-        <p className="mb-4 text-sm text-neutral-400">
-          Free gives you profile, comparisons, and basic recommendations. Pro unlocks negotiation, salary
-          intelligence, and career memory insights.
-        </p>
-        <div className="flex items-center gap-3">
-          <Badge tone={user.tier === "PRO" ? "brand" : "neutral"}>{user.tier === "PRO" ? "Pro" : "Free"}</Badge>
-          <form
-            action={async () => {
-              "use server";
-              await setTier(user.tier === "PRO" ? "FREE" : "PRO");
-            }}
-          >
-            <Button type="submit" variant="secondary">
-              {user.tier === "PRO" ? "Switch to Free (demo)" : "Upgrade to Pro (demo)"}
-            </Button>
-          </form>
-        </div>
-      </Card>
     </div>
   );
 }

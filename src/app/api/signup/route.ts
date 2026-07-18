@@ -30,14 +30,5 @@ export async function POST(req: Request) {
     data: { name, email, passwordHash },
   });
 
-  await prisma.careerEvent.create({
-    data: {
-      userId: user.id,
-      type: "NOTE",
-      title: "Joined Northstar",
-      description: "Started building a career memory with Northstar.",
-    },
-  });
-
   return NextResponse.json({ id: user.id, email: user.email }, { status: 201 });
 }

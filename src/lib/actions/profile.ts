@@ -27,57 +27,33 @@ export async function saveProfile(formData: FormData) {
     .map((s) => s.trim())
     .filter(Boolean);
 
+  const fields = {
+    currentEmployer: str(formData.get("currentEmployer")),
+    currentTitle: str(formData.get("currentTitle")),
+    currentSalary: num(formData.get("currentSalary")),
+    currency: str(formData.get("currency")) ?? "DKK",
+    commuteMinutes: num(formData.get("commuteMinutes")),
+    industry: str(formData.get("industry")),
+    location: str(formData.get("location")),
+    skills,
+    yearsExperience: num(formData.get("yearsExperience")),
+    familySituation: str(formData.get("familySituation")),
+    careerGoals: str(formData.get("careerGoals")),
+    riskTolerance: (str(formData.get("riskTolerance")) as RiskTolerance) ?? "MEDIUM",
+    cvText: str(formData.get("cvText")),
+    cvUpdatedAt: str(formData.get("cvText")) ? new Date() : null,
+    currentPromotionOutlook: num(formData.get("currentPromotionOutlook")),
+    currentLearningRating: num(formData.get("currentLearningRating")),
+  };
+
   await prisma.profile.upsert({
     where: { userId: session.user.id },
-    create: {
-      userId: session.user.id,
-      currentEmployer: str(formData.get("currentEmployer")),
-      currentTitle: str(formData.get("currentTitle")),
-      currentSalary: num(formData.get("currentSalary")),
-      currency: str(formData.get("currency")) ?? "DKK",
-      commuteMinutes: num(formData.get("commuteMinutes")),
-      industry: str(formData.get("industry")),
-      location: str(formData.get("location")),
-      skills,
-      yearsExperience: num(formData.get("yearsExperience")),
-      familySituation: str(formData.get("familySituation")),
-      careerGoals: str(formData.get("careerGoals")),
-      riskTolerance: (str(formData.get("riskTolerance")) as RiskTolerance) ?? "MEDIUM",
-      cvText: str(formData.get("cvText")),
-      cvUpdatedAt: str(formData.get("cvText")) ? new Date() : null,
-      currentPensionPct: num(formData.get("currentPensionPct")),
-      currentVacationDays: num(formData.get("currentVacationDays")),
-      currentManagerRating: num(formData.get("currentManagerRating")),
-      currentCompanyStabilityRating: num(formData.get("currentCompanyStabilityRating")),
-      currentPromotionOutlook: num(formData.get("currentPromotionOutlook")),
-      currentLearningRating: num(formData.get("currentLearningRating")),
-    },
-    update: {
-      currentEmployer: str(formData.get("currentEmployer")),
-      currentTitle: str(formData.get("currentTitle")),
-      currentSalary: num(formData.get("currentSalary")),
-      currency: str(formData.get("currency")) ?? "DKK",
-      commuteMinutes: num(formData.get("commuteMinutes")),
-      industry: str(formData.get("industry")),
-      location: str(formData.get("location")),
-      skills,
-      yearsExperience: num(formData.get("yearsExperience")),
-      familySituation: str(formData.get("familySituation")),
-      careerGoals: str(formData.get("careerGoals")),
-      riskTolerance: (str(formData.get("riskTolerance")) as RiskTolerance) ?? "MEDIUM",
-      cvText: str(formData.get("cvText")),
-      cvUpdatedAt: str(formData.get("cvText")) ? new Date() : null,
-      currentPensionPct: num(formData.get("currentPensionPct")),
-      currentVacationDays: num(formData.get("currentVacationDays")),
-      currentManagerRating: num(formData.get("currentManagerRating")),
-      currentCompanyStabilityRating: num(formData.get("currentCompanyStabilityRating")),
-      currentPromotionOutlook: num(formData.get("currentPromotionOutlook")),
-      currentLearningRating: num(formData.get("currentLearningRating")),
-    },
+    create: { userId: session.user.id, ...fields },
+    update: fields,
   });
 
   revalidatePath("/onboarding");
-  revalidatePath("/dashboard");
+  revalidatePath("/decide");
 }
 
 const CONNECTOR_SEED_DATA: Record<string, Record<string, unknown>> = {
@@ -125,11 +101,5 @@ export async function toggleConnector(type: "LINKEDIN" | "GMAIL" | "CALENDAR" | 
   });
 
   revalidatePath("/onboarding");
-  revalidatePath("/dashboard");
-}
-
-export async function setTier(tier: "FREE" | "PRO") {
-  const session = await requireSession();
-  await prisma.user.update({ where: { id: session.user.id }, data: { tier } });
-  revalidatePath("/", "layout");
+  revalidatePath("/decide");
 }

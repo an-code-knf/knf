@@ -10,11 +10,6 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Tier {
-  FREE
-  PRO
-}
-
 enum RiskTolerance {
   LOW
   MEDIUM
@@ -28,99 +23,40 @@ enum ConnectorType {
   JOB_BOARDS
 }
 
-enum OpportunitySource {
-  INBOUND_EMAIL
-  APPLIED
-  REFERRAL
-  RECRUITER
-}
-
-enum OpportunityStage {
-  SAVED
-  INVITED
-  INTERVIEWING
-  OFFER
-  NEGOTIATING
-  ACCEPTED
-  DECLINED
-  REJECTED
-  WITHDRAWN
-}
-
-enum CompanyStage {
-  STARTUP
-  GROWTH
-  ESTABLISHED
-  ENTERPRISE
-}
-
-enum CompanyTrajectory {
-  SLOWING
-  STABLE
-  GROWING
-}
-
-enum Recommendation {
-  INTERVIEW
-  SKIP
-}
-
-enum CareerEventType {
-  INTERVIEW
-  REJECTION
-  OFFER
-  NEGOTIATION
-  MANAGER_CHANGE
-  PROMOTION
-  ACHIEVEMENT
-  CV_VERSION
-  PERFORMANCE_REVIEW
-  SALARY_CHANGE
-  STAGE_CHANGE
-  NOTE
-}
-
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String
-  tier         Tier     @default(FREE)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  profile       Profile?
-  connectors    Connector[]
-  opportunities Opportunity[]
-  careerEvents  CareerEvent[]
+  profile    Profile?
+  connectors Connector[]
 }
 
 model Profile {
-  id             String        @id @default(cuid())
-  userId         String        @unique
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String        @id @default(cuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   currentEmployer String?
-  currentTitle   String?
-  currentSalary  Int?
-  currency       String        @default("DKK")
-  commuteMinutes Int?
-  industry       String?
-  location       String?
-  skills         String[]      @default([])
+  currentTitle    String?
+  currentSalary   Int?
+  currency        String        @default("DKK")
+  commuteMinutes  Int?
+  industry        String?
+  location        String?
+  skills          String[]      @default([])
   yearsExperience Int?
   familySituation String?
-  careerGoals    String?
-  riskTolerance  RiskTolerance @default(MEDIUM)
-  cvText         String?
-  cvUpdatedAt    DateTime?
-  currentPensionPct           Float?
-  currentVacationDays         Int?
-  currentManagerRating        Int?
-  currentCompanyStabilityRating Int?
-  currentPromotionOutlook     Int?
-  currentLearningRating       Int?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  careerGoals     String?
+  riskTolerance   RiskTolerance @default(MEDIUM)
+  cvText          String?
+  cvUpdatedAt     DateTime?
+  currentPromotionOutlook Int?
+  currentLearningRating   Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 model Connector {
@@ -133,119 +69,4 @@ model Connector {
   syncedData  Json?
 
   @@unique([userId, type])
-}
-
-model MarketBenchmark {
-  id            String   @id @default(cuid())
-  industry      String
-  title         String
-  region        String
-  p25Salary     Int
-  medianSalary  Int
-  p75Salary     Int
-  yoyGrowthPct  Float
-  demandIndex   Int
-  openRolesCount Int
-  updatedAt     DateTime @default(now())
-
-  @@unique([industry, title, region])
-}
-
-model Opportunity {
-  id                String            @id @default(cuid())
-  userId            String
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  company           String
-  role              String
-  source            OpportunitySource @default(APPLIED)
-  stage             OpportunityStage  @default(SAVED)
-  industry          String?
-  salaryEstimateMin Int?
-  salaryEstimateMax Int?
-  currency          String            @default("DKK")
-  commuteMinutes    Int?
-  remote            Boolean           @default(false)
-  companyStage      CompanyStage?
-  companyTrajectory CompanyTrajectory?
-  leadershipRating  Int?
-  promotionOutlook  Int?
-  learningRating    Int?
-  vacationDays      Int?
-  pensionPct        Float?
-  notes             String?
-  hiringManager     String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-
-  decision          Decision?
-  offer             Offer?
-  comparison        Comparison?
-  negotiationDraft  NegotiationDraft?
-  careerEvents      CareerEvent[]
-}
-
-model Decision {
-  id             String         @id @default(cuid())
-  opportunityId  String         @unique
-  opportunity    Opportunity    @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  recommendation Recommendation
-  confidence     Int
-  pros           String[]
-  cons           String[]
-  rationale      String
-  createdAt      DateTime       @default(now())
-}
-
-model Offer {
-  id              String      @id @default(cuid())
-  opportunityId   String      @unique
-  opportunity     Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  baseSalary      Int
-  currency        String      @default("DKK")
-  bonusPct        Float?
-  signOnBonus     Int?
-  pensionPct      Float?
-  vacationDays    Int?
-  equity          String?
-  remotePolicy    String?
-  benefitsNotes   String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-}
-
-model Comparison {
-  id                   String      @id @default(cuid())
-  opportunityId        String      @unique
-  opportunity          Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  rows                 Json
-  fiveYearStayEarnings Int
-  fiveYearNewEarnings  Int
-  recommendation       String
-  rationale            String
-  createdAt            DateTime    @default(now())
-}
-
-model NegotiationDraft {
-  id             String      @id @default(cuid())
-  opportunityId  String      @unique
-  opportunity    Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
-  targetSalary   Int
-  asks           Json
-  emailDraft     String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-}
-
-model CareerEvent {
-  id            String          @id @default(cuid())
-  userId        String
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  opportunityId String?
-  opportunity   Opportunity?    @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
-  type          CareerEventType
-  title         String
-  description   String?
-  eventDate     DateTime        @default(now())
-  metadata      Json?
-  createdAt     DateTime        @default(now())
 }
