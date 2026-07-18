@@ -44,6 +44,7 @@ export default async function Home() {
             </Button>
           </Link>
         </div>
+        <p className="mt-4 text-sm text-neutral-500">Have AI decide your career for just $1.99</p>
       </section>
 
       <section className="mx-auto max-w-4xl px-6 pb-24">
