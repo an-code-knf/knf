@@ -5,6 +5,11 @@ for actually worth it? Paste the posting, confirm a few details, and get a
 confidence-scored GO/STAY verdict backed by your salary, commute, and risk
 tolerance — not another spreadsheet.
 
+## Project source of truth
+
+- [`NORTHSTAR.md`](NORTHSTAR.md) — product direction, MVP scope, and priorities
+- [`docs/`](docs/README.md) — architecture and decision record
+
 ## Stack
 
 - **Next.js 16** (App Router, Server Actions, TypeScript)
