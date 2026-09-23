@@ -19,9 +19,11 @@ per request and are not persisted.
 
 1. The user records their current role, salary, commute, career context, and
    risk tolerance on `/onboarding`.
-2. `saveProfile` upserts the single profile associated with the user.
-3. Connector toggles write simulated data only; no third-party OAuth or sync is
-   active.
+2. Optional sensitive context is collapsed and is not required for a first
+   decision.
+3. `saveProfile` upserts the single profile associated with the user.
+4. Dormant connector actions can write simulated data, but the controls are not
+   present in active onboarding and no third-party OAuth or sync is active.
 
 ### Decision
 
@@ -31,8 +33,10 @@ per request and are not persisted.
 3. The user confirms or manually supplies the opportunity facts.
 4. `scoreOpportunity` compares those facts with the stored profile using
    deterministic rules.
-5. The reasoner formats the same scored factors into a short rationale.
-6. The result is rendered immediately and is not stored.
+5. With fewer than two comparable evidence dimensions, the engine returns MORE
+   INFO instead of inventing a binary verdict.
+6. The reasoner formats the same scored factors into a short rationale.
+7. The result is rendered immediately and is not stored.
 
 ## Boundaries
 
@@ -67,13 +71,12 @@ Do not copy production environment values into documentation or local files.
 
 ## Known gaps and risks
 
-- There is no automated test suite or CI configuration.
-- The confidence percentage is derived directly from score points and is not a
-  calibrated probability.
+- Automated coverage currently protects scoring behavior only; authentication,
+  ingestion, and end-to-end flows still lack tests and there is no CI workflow.
 - Job ingestion applies useful first-pass SSRF checks but does not resolve DNS,
   so it is not a complete security boundary.
 - Password login has no email verification, reset flow, or visible rate limit.
-- Simulated connectors write sample state to the database but never contact the
-  named services.
+- Dormant simulated connector actions can write sample state to the database but
+  never contact the named services.
 - The package name (`knf`), product name (`Northstar`), and long-lived feature
   branch should be normalized when release ownership is decided.

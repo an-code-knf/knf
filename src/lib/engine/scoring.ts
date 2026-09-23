@@ -9,8 +9,7 @@ function pct(delta: number, base: number): number {
 /**
  * Deterministic "should I even take this interview?" scoring.
  * Every factor below is a rule, not a guess — each one produces a labeled,
- * signed point value so the pros/cons list and the confidence score always
- * agree with each other.
+ * signed point value so the pros/cons list and verdict always agree.
  */
 export function scoreOpportunity(
   profileInput: ProfileInput,
@@ -25,12 +24,35 @@ export function scoreOpportunity(
     currentLearningRating: null,
   };
   const factors: ScoredFactor[] = [];
+  const salaryMin = opportunity.salaryEstimateMin ?? opportunity.salaryEstimateMax;
+  const salaryMax = opportunity.salaryEstimateMax ?? opportunity.salaryEstimateMin;
+  const evidence = [
+    { present: Boolean(profileInput?.currentSalary && salaryMin != null && salaryMax != null), missing: "salary comparison" },
+    {
+      present: opportunity.remote === true || (profileInput?.commuteMinutes != null && opportunity.commuteMinutes != null),
+      missing: "commute or remote setup",
+    },
+    { present: opportunity.companyTrajectory != null, missing: "company trajectory" },
+    { present: opportunity.leadershipRating != null, missing: "leadership quality" },
+    {
+      present: profileInput?.currentPromotionOutlook != null && opportunity.promotionOutlook != null,
+      missing: "promotion outlook comparison",
+    },
+    {
+      present: profileInput?.currentLearningRating != null && opportunity.learningRating != null,
+      missing: "learning comparison",
+    },
+    {
+      present:
+        profileInput != null &&
+        (opportunity.companyStage === "STARTUP" || opportunity.companyStage === "ENTERPRISE"),
+      missing: "company stage and risk fit",
+    },
+  ];
 
   // Salary
   {
-    const min = opportunity.salaryEstimateMin ?? opportunity.salaryEstimateMax;
-    const max = opportunity.salaryEstimateMax ?? opportunity.salaryEstimateMin;
-    const est = min != null && max != null ? (min + max) / 2 : 0;
+    const est = salaryMin != null && salaryMax != null ? (salaryMin + salaryMax) / 2 : 0;
     if (profile.currentSalary && est) {
       const deltaPct = pct(est - profile.currentSalary, profile.currentSalary);
       const points = Math.max(-30, Math.min(30, Math.round(deltaPct * 1.8)));
@@ -71,9 +93,8 @@ export function scoreOpportunity(
   }
 
   // Promotion outlook vs current baseline
-  const promotionBaseline = profile.currentPromotionOutlook ?? 3;
-  if (opportunity.promotionOutlook != null) {
-    const delta = opportunity.promotionOutlook - promotionBaseline;
+  if (opportunity.promotionOutlook != null && profileInput?.currentPromotionOutlook != null) {
+    const delta = opportunity.promotionOutlook - profileInput.currentPromotionOutlook;
     if (delta <= -1) {
       factors.push({ label: "promotion opportunities lower", points: -8 });
     } else if (delta >= 1) {
@@ -82,9 +103,8 @@ export function scoreOpportunity(
   }
 
   // Learning & development vs current baseline
-  const learningBaseline = profile.currentLearningRating ?? 3;
-  if (opportunity.learningRating != null) {
-    const delta = opportunity.learningRating - learningBaseline;
+  if (opportunity.learningRating != null && profileInput?.currentLearningRating != null) {
+    const delta = opportunity.learningRating - profileInput.currentLearningRating;
     if (delta <= -1) {
       factors.push({ label: "fewer learning opportunities", points: -6 });
     } else if (delta >= 1) {
@@ -115,15 +135,21 @@ export function scoreOpportunity(
   }
 
   const netScore = factors.reduce((sum, f) => sum + f.points, 0);
-  const confidence = Math.max(5, Math.min(97, Math.round(50 + netScore)));
-  const recommendation: OpportunityScore["recommendation"] = netScore >= 0 ? "INTERVIEW" : "SKIP";
+  const evidenceCount = evidence.filter((item) => item.present).length;
+  const evidenceLevel: OpportunityScore["evidenceLevel"] =
+    evidenceCount <= 2 ? "LOW" : evidenceCount <= 4 ? "MEDIUM" : "HIGH";
+  const missingInputs = evidence.filter((item) => !item.present).map((item) => item.missing);
+  const recommendation: OpportunityScore["recommendation"] =
+    evidenceCount < 2 || netScore === 0 ? "MORE_INFO" : netScore > 0 ? "INTERVIEW" : "SKIP";
 
   const pros = factors.filter((f) => f.points > 0).sort((a, b) => b.points - a.points).map((f) => f.label);
   const cons = factors.filter((f) => f.points < 0).sort((a, b) => a.points - b.points).map((f) => f.label);
 
   return {
     recommendation,
-    confidence,
+    evidenceCount,
+    evidenceLevel,
+    missingInputs,
     pros,
     cons,
     netScore,
@@ -139,14 +165,16 @@ export async function scoreOpportunityWithRationale(
   const headline =
     score.recommendation === "INTERVIEW"
       ? `Take the interview with ${opportunity.company}.`
-      : `Skip this one from ${opportunity.company} for now.`;
+      : score.recommendation === "SKIP"
+        ? `Skip this one from ${opportunity.company} for now.`
+        : `Add more details before deciding on ${opportunity.company}.`;
 
   const rationale = await reasoner.summarize({
     kind: "interview-decision",
     headline,
     pros: score.pros,
     cons: score.cons,
-    facts: { role: opportunity.role, company: opportunity.company, confidence: score.confidence },
+    facts: { role: opportunity.role, company: opportunity.company, evidenceCount: score.evidenceCount },
   });
 
   return { ...score, rationale };

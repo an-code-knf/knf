@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/primitives";
-import { Link2, Scale, CheckCircle2, Sparkles, UserRound, FileSearch, Target } from "lucide-react";
+import { Link2, Scale, CheckCircle2, ShieldCheck, UserRound, FileSearch, Target } from "lucide-react";
 
 export default async function Home() {
   const session = await auth();
@@ -31,7 +31,7 @@ export default async function Home() {
   const reasons = [
     { icon: UserRound, title: "It knows you", body: "Salary, commute, family, risk tolerance." },
     { icon: FileSearch, title: "It reads the posting", body: "Paste a URL, we pull the details." },
-    { icon: Target, title: "It decides", body: "One confidence-rated verdict." },
+    { icon: Target, title: "It decides", body: "One evidence-backed verdict." },
   ];
 
   return (
@@ -69,12 +69,12 @@ export default async function Home() {
         </div>
 
         <Link href="/signup" className="mt-8">
-          <Button className="px-8 py-3.5 text-base">Get your Answer</Button>
+          <Button className="px-8 py-3.5 text-base">Get your answer</Button>
         </Link>
 
-        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-base font-bold text-emerald-300 sm:text-lg">
-          <Sparkles className="h-5 w-5" strokeWidth={2} />
-          Have AI decide your career for just $1.99
+        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-5 py-2.5 text-sm font-semibold text-violet-200 sm:text-base">
+          <ShieldCheck className="h-5 w-5" strokeWidth={2} />
+          Transparent rules. No black-box recommendation.
         </div>
       </main>
 
@@ -82,7 +82,7 @@ export default async function Home() {
         <div className="mx-auto max-w-4xl">
           <p className="text-center text-xs text-neutral-500">
             Browse LinkedIn. Read Glassdoor. Update your CV. Ask ChatGPT. Spreadsheet pros and cons.{" "}
-            <span className="text-neutral-300">Northstar replaces all of it with one button.</span>
+            <span className="text-neutral-300">Northstar brings the decision into one place.</span>
           </p>
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
             {reasons.map((reason) => (

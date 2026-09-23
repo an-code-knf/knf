@@ -2,7 +2,7 @@
 
 Northstar answers one question: is the job you've been invited to interview
 for actually worth it? Paste the posting, confirm a few details, and get a
-confidence-scored GO/STAY verdict backed by your salary, commute, and risk
+evidence-backed GO/STAY verdict backed by your salary, commute, and risk
 tolerance — not another spreadsheet.
 
 ## Project source of truth
@@ -24,12 +24,9 @@ tolerance — not another spreadsheet.
   outlook, risk tolerance fit), and best-effort job-posting URL parsing
   (`src/lib/job-fetch.ts` reads schema.org `JobPosting` structured data where
   a site provides it, falling back to page metadata).
-- **Mocked**: "Connect LinkedIn / Gmail / Calendar / Job boards" on the
-  Profile page — these simulate what Northstar would automatically ingest,
-  since wiring real OAuth requires registering apps with each provider (and
-  Glassdoor-equivalent data has no legitimate public API at all). Swapping in
-  real integrations later only touches `src/lib/actions/profile.ts`
-  (`toggleConnector`).
+- **Dormant prototype code**: simulated LinkedIn / Gmail / Calendar / job-board
+  connector actions still exist, but they are intentionally removed from the
+  active onboarding experience. There is no real OAuth or external sync.
 - **AI-ready, not AI-backed**: the recommendation engine is deterministic
   rules (see `src/lib/engine/scoring.ts`), not an LLM call. Narrative
   generation is factored behind a `Reasoner` interface
@@ -65,7 +62,7 @@ src/lib/actions/         Server Actions — the only way data is written.
 src/app/(auth)/          Login / signup.
 src/app/(app)/decide/    The product: paste a URL or fill in the details,
                          hit the big button, get GO or STAY.
-src/app/(app)/onboarding/ Profile setup + mocked connectors.
+src/app/(app)/onboarding/ Profile setup with optional personalization.
 ```
 
 ## Deploy (Vercel + hosted Postgres)

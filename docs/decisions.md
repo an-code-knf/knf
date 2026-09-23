@@ -51,6 +51,34 @@ creates enough user value to justify the privacy and data-retention burden.
 owns current system facts. This file owns durable decisions. The README remains
 the quick-start guide.
 
+## 2026-09-23 — Refuse low-evidence verdicts
+
+**Status:** Accepted
+
+The engine returns MORE INFO when fewer than two comparable evidence dimensions
+are present or when supported factors are tied. A neutral score is not evidence
+for taking an interview. Numeric “confidence” is replaced with a count and
+low/medium/high evidence label because the existing percentage was not
+calibrated.
+
+## 2026-09-23 — Remove unsupported trust claims from the active MVP
+
+**Status:** Accepted
+
+The landing page no longer claims an AI decision or advertises an unimplemented
+$1.99 purchase. Simulated connector controls are removed from active onboarding.
+Optional CV, family, skills, and goals fields remain available but collapsed.
+These changes favor honest product behavior over prototype theater.
+
+## 2026-09-23 — Treat synthetic evaluation as hypothesis generation
+
+**Status:** Accepted
+
+The 300-persona synthetic study in `docs/research/` is useful for finding
+internal contradictions and generating priorities, but it is not customer
+validation. No pricing, retention, or expansion decision may rely on it without
+real interviews or behavioral evidence.
+
 ## Entry template
 
 ```md

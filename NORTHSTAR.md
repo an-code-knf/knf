@@ -8,7 +8,8 @@ Detailed technical context lives in [`docs/`](docs/README.md).
 
 Northstar helps a professional decide whether a job opportunity is worth an
 interview by comparing it with their current situation and returning a clear,
-evidence-backed GO or STAY verdict.
+evidence-backed GO or STAY verdict—or asking for more information when the
+evidence is too thin.
 
 ## Product status
 
@@ -16,9 +17,8 @@ evidence-backed GO or STAY verdict.
 - Repository: `an-code-knf/knf`
 - Active deployment branch: `claude/ai-career-decision-mvp-7jnkqf`
 - Production project: Vercel `an-code-knfs-projects/northstar`
-- Latest production commit observed on 2026-09-22: `7b68c8f`
 - Stable production URL: `northstar-rho-one.vercel.app`
-- Latest deployment URL: `northstar-g3h1ettwb-an-code-knfs-projects.vercel.app`
+- Production deploys automatically from the active branch above.
 
 ## Vision
 
@@ -49,8 +49,8 @@ entering a lengthy interview process.
 After the user records their current situation and supplies a job posting or
 opportunity details, Northstar returns:
 
-- a GO or STAY verdict;
-- a confidence score;
+- a GO or STAY verdict, or an explicit request for more information;
+- a visible evidence count and evidence level;
 - the strongest factors for and against the opportunity; and
 - a short rationale traceable to those factors.
 
@@ -67,7 +67,8 @@ In scope today:
 
 Not yet real or not in scope:
 
-- LinkedIn, Gmail, Calendar, or job-board integrations (currently simulated);
+- LinkedIn, Gmail, Calendar, or job-board integrations (prototype actions are
+  dormant and absent from active onboarding);
 - an LLM-backed recommendation engine;
 - persisted opportunity history, side-by-side comparison, or negotiation tools;
 - payment processing despite pricing language on the landing page;
@@ -100,13 +101,12 @@ See [`docs/architecture.md`](docs/architecture.md) for boundaries and data flow.
 
 ## Current priorities
 
-1. Validate the target user, trigger event, and willingness to pay through
-   customer interviews and observed tests of the current flow.
-2. Define success measures for the MVP: completed decisions, perceived trust,
-   decision usefulness, and whether users take or skip the interview.
-3. Establish a reliability baseline before adding features: automated tests for
-   scoring, authentication, and job-posting ingestion; explicit confidence
-   semantics; and production error visibility.
+1. Validate the target user, trigger event, and willingness to pay through at
+   least 10 real customer interviews and five observed tests of the current flow.
+2. Instrument the funnel: signup, profile completion, decision submission,
+   MORE INFO frequency, and whether the recommendation was useful.
+3. Extend the reliability baseline beyond scoring tests to authentication and
+   job-posting ingestion, then add production error visibility.
 4. Move production to a deliberately named default/release branch after the
    current MVP is reviewed.
 5. Only then decide whether the next investment is better data ingestion,
@@ -126,7 +126,6 @@ See [`docs/architecture.md`](docs/architecture.md) for boundaries and data flow.
 
 - Is the first user a passive candidate, an active job seeker, or both?
 - Which missing input most often changes the verdict?
-- What does the displayed confidence percentage mean to users?
 - Is the intended paid unit a single decision, a subscription, or something
   else?
 - Should a decision be saved, and if so, for how long and with what privacy
@@ -136,5 +135,7 @@ See [`docs/architecture.md`](docs/architecture.md) for boundaries and data flow.
 
 The canonical log is [`docs/decisions.md`](docs/decisions.md). The current
 baseline decisions are: narrow the MVP to interview-worthiness, use a
-deterministic scoring core, make narratives replaceable, keep connectors
-explicitly simulated, and avoid persisting decisions in the first prototype.
+deterministic scoring core, request more information when fewer than two
+comparison dimensions are present or the supported factors are tied, keep narratives replaceable, remove
+simulated connectors from active onboarding, and avoid persisting decisions in
+the first prototype.

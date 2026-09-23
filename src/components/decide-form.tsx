@@ -140,22 +140,40 @@ function Verdict({
   role?: string;
 }) {
   const go = score.recommendation === "INTERVIEW";
+  const needsMoreInfo = score.recommendation === "MORE_INFO";
   return (
     <div
       className={`space-y-5 rounded-2xl border p-8 text-center ${
-        go ? "border-emerald-700 bg-emerald-500/10" : "border-neutral-700 bg-neutral-800/40"
+        go
+          ? "border-emerald-700 bg-emerald-500/10"
+          : needsMoreInfo
+            ? "border-amber-700 bg-amber-500/10"
+            : "border-neutral-700 bg-neutral-800/40"
       }`}
     >
       <div>
-        <div className={`text-6xl font-bold tracking-tight ${go ? "text-emerald-400" : "text-neutral-200"}`}>
-          {go ? "GO" : "STAY"}
+        <div
+          className={`text-6xl font-bold tracking-tight ${
+            go ? "text-emerald-400" : needsMoreInfo ? "text-amber-300" : "text-neutral-200"
+          }`}
+        >
+          {go ? "GO" : needsMoreInfo ? "MORE INFO" : "STAY"}
         </div>
         <p className="mt-2 text-sm text-neutral-400">
-          {role} @ {company} · Confidence {score.confidence}%
+          {role} @ {company} · Evidence {score.evidenceCount}/7 ({score.evidenceLevel.toLowerCase()})
         </p>
       </div>
 
       <p className="mx-auto max-w-xl text-sm text-neutral-300">{score.rationale}</p>
+
+      {needsMoreInfo && (
+        <div className="mx-auto max-w-xl rounded-xl border border-amber-800/60 bg-amber-950/30 p-4 text-left">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-300">Add next</h3>
+          <p className="mt-2 text-sm text-neutral-300">
+            Provide at least one more useful comparison, such as {score.missingInputs.slice(0, 3).join(", ")}.
+          </p>
+        </div>
+      )}
 
       <div className="mx-auto grid max-w-xl gap-4 text-left sm:grid-cols-2">
         <div>
@@ -178,7 +196,9 @@ function Verdict({
         </div>
       </div>
 
-      <Badge tone={go ? "positive" : "neutral"}>{go ? "Take the interview" : "Not worth it right now"}</Badge>
+      <Badge tone={go ? "positive" : "neutral"}>
+        {go ? "Take the interview" : needsMoreInfo ? "Not enough evidence yet" : "Not worth it right now"}
+      </Badge>
     </div>
   );
 }

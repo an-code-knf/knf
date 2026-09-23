@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Northstar — the operating system for your career",
+  title: "Northstar — should you take the interview?",
   description:
-    "Northstar helps professionals decide whether to stay, interview, negotiate, or accept — with confidence, backed by personalized AI analysis instead of guesswork.",
+    "Compare a job opportunity with your current role and get a transparent, evidence-backed GO or STAY recommendation.",
 };
 
 export default function RootLayout({

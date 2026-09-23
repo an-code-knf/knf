@@ -1,6 +1,14 @@
 import type { Profile } from "@/generated/prisma/client";
 
-export type ProfileInput = Profile | null;
+export type ProfileInput = Pick<
+  Profile,
+  | "currentSalary"
+  | "commuteMinutes"
+  | "riskTolerance"
+  | "familySituation"
+  | "currentPromotionOutlook"
+  | "currentLearningRating"
+> | null;
 
 export type CompanyStage = "STARTUP" | "GROWTH" | "ESTABLISHED" | "ENTERPRISE";
 export type CompanyTrajectory = "GROWING" | "STABLE" | "SLOWING";
@@ -27,8 +35,10 @@ export interface ScoredFactor {
 }
 
 export interface OpportunityScore {
-  recommendation: "INTERVIEW" | "SKIP";
-  confidence: number;
+  recommendation: "INTERVIEW" | "SKIP" | "MORE_INFO";
+  evidenceCount: number;
+  evidenceLevel: "LOW" | "MEDIUM" | "HIGH";
+  missingInputs: string[];
   pros: string[];
   cons: string[];
   rationale: string;
