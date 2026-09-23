@@ -71,7 +71,7 @@ Not yet real or not in scope:
   dormant and absent from active onboarding);
 - an LLM-backed recommendation engine;
 - persisted opportunity history, side-by-side comparison, or negotiation tools;
-- payment processing despite pricing language on the landing page;
+- payment processing or a committed pricing model;
 - native mobile apps, employer/recruiter workflows, or team accounts.
 
 ## Product principles

@@ -24,14 +24,14 @@ export default async function Home() {
     {
       icon: CheckCircle2,
       title: "Get your answer",
-      body: "A straight verdict. GO, or STAY.",
+      body: "GO, STAY, or a clear request for more information.",
     },
   ];
 
   const reasons = [
     { icon: UserRound, title: "It knows you", body: "Salary, commute, family, risk tolerance." },
     { icon: FileSearch, title: "It reads the posting", body: "Paste a URL, we pull the details." },
-    { icon: Target, title: "It decides", body: "One evidence-backed verdict." },
+    { icon: Target, title: "It decides", body: "A verdict—or a clear request for more information." },
   ];
 
   return (

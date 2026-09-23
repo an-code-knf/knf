@@ -2,7 +2,7 @@
 
 Northstar answers one question: is the job you've been invited to interview
 for actually worth it? Paste the posting, confirm a few details, and get a
-evidence-backed GO/STAY verdict backed by your salary, commute, and risk
+GO/STAY verdict—or a request for more information—backed by your salary, commute, and risk
 tolerance — not another spreadsheet.
 
 ## Project source of truth

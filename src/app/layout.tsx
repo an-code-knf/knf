@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Northstar — should you take the interview?",
   description:
-    "Compare a job opportunity with your current role and get a transparent, evidence-backed GO or STAY recommendation.",
+    "Compare a job opportunity with your current role and get a transparent, evidence-backed recommendation—or learn what information is missing.",
 };
 
 export default function RootLayout({
